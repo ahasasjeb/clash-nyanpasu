@@ -522,6 +522,10 @@ pub fn on_system_tray_event(event: &str) {
                 .await
                 .with_context(|| format!("select proxy failed, {group} {name}, cause: "))?;
 
+            // Interrupt connections based on configuration, same as IPC select_proxy
+            let _ = crate::core::connection_interruption::ConnectionInterruptionService::on_proxy_change()
+                .await;
+
             debug!("select proxy success: {} {}", group, name);
             Ok::<(), anyhow::Error>(())
         })?;
